@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -14,8 +14,9 @@ export class ProductsService {
     private configService: ConfigService,
   ) {}
 
-  @Cron('0 * * * *') // every hour
+  @Cron(CronExpression.EVERY_HOUR) // every hour
   async fetchProductsFromContentful() {
+    console.log('every ', new Date().getTime().toLocaleString());
     const response = await this.httpService
       .get(
         `https://cdn.contentful.com/spaces/${this.configService.get<string>('CONTENTFUL_SPACE_ID')}/environments/${this.configService.get<string>('CONTENTFUL_ENVIRONMENT')}/entries?content_type=product`,
@@ -32,6 +33,8 @@ export class ProductsService {
       category: item.fields.category,
       price: item.fields.price,
     }));
+
+    console.log(products);
 
     await this.productModel.deleteMany({});
     await this.productModel.insertMany(products);

@@ -1,4 +1,11 @@
-import { Controller, Get, Query, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Delete,
+  Param,
+  BadRequestException,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './schemas/product.schema';
 import { ConfigService } from '@nestjs/config';
@@ -16,6 +23,7 @@ export class ProductsController {
     @Query('limit') limit = 5,
     @Query() filter: any,
   ): Promise<Product[]> {
+    if (limit > 5) throw new BadRequestException('Limit need to be 5 or less');
     return this.productsService.findAll(Number(page), Number(limit), filter);
   }
 
