@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot('mongodb://localhost/contentful-products'),
+    MongooseModule.forRoot('mongodb://mongo:27017/contentful-products'),
     ProductsModule,
     AuthModule,
     ReportsModule,

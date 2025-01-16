@@ -16,5 +16,9 @@ import { ScheduleModule } from '@nestjs/schedule';
   ],
   controllers: [ProductsController],
   providers: [ProductsService],
+  // Shared Modules: If multiple modules need access to a service,
+  // consider creating a shared module that exports this service for use in other modules.
+  // This can help maintain a clean architecture. In this case ReportModule is gonna use it.
+  exports: [ProductsService],
 })
 export class ProductsModule {}

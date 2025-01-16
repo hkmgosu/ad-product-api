@@ -1,3 +1,30 @@
+# NestJS Contentful API
+
+## Requirements
+- Docker
+- Node.js (LTS)
+
+## Setup
+1. Clone the repository
+2. Run `docker-compose up` to start the application and MongoDB.
+3. Access the API at `http://localhost:3000`.
+4. API documentation is available at `http://localhost:3000/api/docs`.
+
+## API Endpoints
+- `GET /products` to retrieve paginated products.
+- `DELETE /products/:id` to delete a product.
+
+## Scheduled Tasks
+- The server fetches product data from Contentful every hour.
+
+## Tests
+- Run `npm test` to execute the tests.
+
+## GitHub Actions
+- CI/CD is configured with tests and linters running on push.
+
+---------------------------------
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
