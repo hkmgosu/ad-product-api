@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { ReportsController } from './reports.controller';
-import { ProductsModule } from 'src/products/products.module';
+import { ProductsModule } from '../products/products.module';
 
 // we are gonna reuse the product services in the report module
 @Module({
