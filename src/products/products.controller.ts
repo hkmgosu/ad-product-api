@@ -41,29 +41,48 @@ export class ProductsController {
     name: 'limit',
     required: false,
     type: Number,
-    description: 'Number of Products to return',
+    description: 'Number of Products to return (max 5 for page)',
     example: 5,
   })
   @ApiQuery({
-    name: 'filter',
+    name: 'name',
     required: false,
-    type: Object,
-    description: 'Filters for pagination',
-    example: "{ name: 'Dell', category: 'Laptop' }",
+    type: String,
+    description: 'Products filtered by name to return',
+    example: 'Apple Mi Watch',
+  })
+  @ApiQuery({
+    name: 'category',
+    required: false,
+    type: String,
+    description: 'Products filtered by category to return',
+    example: 'Smartwatch',
+  })
+  @ApiQuery({
+    name: 'minPrice',
+    required: false,
+    type: Number,
+    description: 'Products filtered by minimum price to return',
+    example: 1400,
+  })
+  @ApiQuery({
+    name: 'maxPrice',
+    required: false,
+    type: Number,
+    description: 'Products filtered by maximum price to return',
+    example: 1800,
   })
   @ApiResponse({ status: 200, description: 'Retrieved products successfully.' })
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 5,
-    @Query('filter')
-    filter: {
-      name: string;
-      category: string;
-      minPrice: number;
-      maxPrice: number;
-    },
+    @Query('name') name: string | undefined,
+    @Query('category') category: string | undefined,
+    @Query('minPrice') minPrice: number | undefined,
+    @Query('maxPrice') maxPrice: number | undefined,
   ): Promise<Product[]> {
     if (limit > 5) throw new BadRequestException('Limit need to be 5 or less');
+    const filter = { name, category, minPrice, maxPrice };
     return this.productsService.findAll(Number(page), Number(limit), filter);
   }
 

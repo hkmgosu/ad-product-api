@@ -17,7 +17,7 @@ export class Product {
     type: String,
     description: 'Category of the Product',
   })
-  @Prop()
+  @Prop({ required: true })
   category: string;
 
   @ApiProperty({
@@ -26,6 +26,13 @@ export class Product {
   })
   @Prop({ required: true })
   price: number;
+
+  @ApiProperty({
+    type: Date,
+    description: 'Created date of Product',
+  })
+  @Prop({ required: true })
+  createdAt: Date;
 
   @ApiProperty({
     type: Boolean,

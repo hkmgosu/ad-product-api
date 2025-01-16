@@ -1,4 +1,5 @@
-import { IsOptional, IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsDateString, IsBoolean } from 'class-validator';
 
 export class GetReportDto {
   @IsOptional()
@@ -10,8 +11,7 @@ export class GetReportDto {
   endDate?: string;
 
   @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
   withPrice?: boolean;
-
-  @IsOptional()
-  withoutPrice?: boolean;
 }
