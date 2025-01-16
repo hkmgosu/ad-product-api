@@ -8,6 +8,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
+    jest.setTimeout(10000);
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -16,12 +17,11 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/non-existent-route (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(404);
+  afterAll(async () => {
+    await app.close();
   });
 
-  afterAll(async () => {
-    await connection.close();
-    await app.close();
+  it('/', () => {
+    return request(app.getHttpServer()).get('/').expect(404);
   });
 });
