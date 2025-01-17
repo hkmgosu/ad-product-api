@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 
 describe('App E2E Tests', () => {
   let app: INestApplication;
@@ -21,8 +22,10 @@ describe('App E2E Tests', () => {
   });
 
   afterAll(async () => {
-    await mongoServer.stop();
+    // Close the application and MongoDB connection
     await app.close();
+    await mongoServer.stop();
+    await mongoose.connection.close(); // Close Mongoose connection
   });
 
   it('/', () => {
