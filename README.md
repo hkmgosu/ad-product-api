@@ -7,11 +7,11 @@
 ## Setup
 1. Clone the repository
 2. Create a .env file for your environment with your private information
-    CONTENTFUL_SPACE_ID=
-    CONTENTFUL_ACCESS_TOKEN=
-    CONTENTFUL_ENVIRONMENT=
-    CONTENTFUL_CONTENT_TYPE=
-    MONGO_URI=
+  - CONTENTFUL_SPACE_ID=
+  - CONTENTFUL_ACCESS_TOKEN=
+  - CONTENTFUL_ENVIRONMENT=
+  - CONTENTFUL_CONTENT_TYPE=
+  - MONGO_URI=
 3. Run `docker-compose up` to start the application and MongoDB.
 4. Access the API at `http://localhost:3000`.
 5. API documentation is available at `http://localhost:3000/api/docs`.
