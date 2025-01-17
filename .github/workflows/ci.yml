@@ -42,12 +42,26 @@ jobs:
 
   test-e2e:
     runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongo --eval 'db.adminCommand('ping')'" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node 20
-        uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: 20
-          cache: npm
-      - run: npm install
-      - run: npm run test:e2e
+          node-version: '14'
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        env:
+          MONGODB_URI: mongodb://localhost:27017/test
+        run: npm run test:e2e

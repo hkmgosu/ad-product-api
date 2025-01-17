@@ -7,7 +7,7 @@ describe('App E2E Tests', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    jest.setTimeout(10000); // Set timeout for this hook
+    jest.setTimeout(20000); // Set timeout for this hook
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -16,12 +16,8 @@ describe('App E2E Tests', () => {
     await app.init();
   });
 
-  beforeEach(async () => {
-    jest.setTimeout(10000); // Set timeout for this hook
-    // Additional setup logic
-  });
-
   afterAll(async () => {
+    jest.setTimeout(10000);
     await app.close();
   });
 
