@@ -1,23 +1,34 @@
 version: '3.8'
 
 services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"  # Expose MongoDB on port 27017
+    volumes:
+      - mongo-data:/data/db  # Persist data
+      
   app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
-    environment:
-      MONGODB_URI: mongodb://mongo:27017/contentful-products
+      - "3000:3000"  # Expose the app on port 3000
     depends_on:
       - mongo
-
-  mongo:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+    environment:
+      CONTENTFUL_SPACE_ID: ${CONTENTFUL_SPACE_ID}
+      CONTENTFUL_ACCESS_TOKEN: ${CONTENTFUL_ACCESS_TOKEN}
+      CONTENTFUL_ENVIRONMENT: ${CONTENTFUL_ENVIRONMENT}
+      CONTENTFUL_CONTENT_TYPE: ${CONTENTFUL_CONTENT_TYPE}
+      MONGODB_URI: mongodb://mongo:27017/contentful-products
+    networks:
+      - app-network
 
 volumes:
-  mongo_data:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
