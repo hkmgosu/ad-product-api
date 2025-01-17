@@ -15,7 +15,7 @@ export class ProductsService {
     private configService: ConfigService,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR) // every hour
+  @Cron(CronExpression.EVERY_HOUR) // every hour refresh
   async fetchProductsFromContentful() {
     const response = await firstValueFrom(
       this.httpService.get(
@@ -28,7 +28,7 @@ export class ProductsService {
       ),
     );
 
-    const products = response.data.items.map(
+    const products: Product[] = response.data.items.map(
       (item: {
         sys: { createdAt: Date };
         fields: { name: string; category: string; price: number };
@@ -41,6 +41,7 @@ export class ProductsService {
       }),
     );
 
+    // ASSUMPTION: refresh the database collection every hour, comment the next line if you want to persist data.
     await this.productModel.deleteMany({});
     await this.productModel.insertMany(products);
   }
@@ -102,9 +103,11 @@ export class ProductsService {
     startDate: Date,
     endDate: Date,
   ): Promise<number> {
-    const totalProducts = await this.productModel.countDocuments({
-      deleted: false,
-    });
+    const totalProducts = await this.productModel.countDocuments();
+    // If there are no non-deleted products, return 0 to avoid division by zero
+    if (totalProducts === 0) {
+      return 0;
+    }
     const filteredProducts = await this.productModel.countDocuments({
       deleted: false,
       ...(withPrice === 'true'

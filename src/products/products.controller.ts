@@ -88,14 +88,14 @@ export class ProductsController {
 
   @ApiOperation({
     summary: 'Delete a Product',
-    description: 'Delete products',
+    description: 'Delete product by id',
     tags: ['Products'],
   })
   @ApiParam({
     name: 'id',
     required: true,
     type: String,
-    description: 'Delete a Product id',
+    description: 'Delete a Product by id',
   })
   @ApiResponse({
     status: 200,
@@ -105,15 +105,4 @@ export class ProductsController {
   async remove(@Param('id') id: string) {
     return this.productsService.deleteProduct(id);
   }
-
-  // @Get('/testing')
-  // async getHello(): Promise<any> {
-  //   console.log(
-  //     'call content',
-  //     await this.productsService.fetchProductsFromContentful(),
-  //   );
-  //   return (
-  //     'Hello BOBBY' + this.configService.get<string>('CONTENTFUL_ENVIRONMENT')
-  //   );
-  // }
 }

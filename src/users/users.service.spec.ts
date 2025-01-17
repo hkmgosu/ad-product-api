@@ -15,4 +15,20 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  describe('findOne', () => {
+    it('should return a user when a valid username is given', async () => {
+      const user = await service.findOne('john');
+      expect(user).toEqual({
+        userId: 1,
+        username: 'john',
+        password: 'changeme',
+      });
+    });
+
+    it('should return undefined when an invalid username is given', async () => {
+      const user = await service.findOne('nonexistent');
+      expect(user).toBeUndefined();
+    });
+  });
 });

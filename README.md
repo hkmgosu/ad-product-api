@@ -6,13 +6,20 @@
 
 ## Setup
 1. Clone the repository
-2. Run `docker-compose up` to start the application and MongoDB.
-3. Access the API at `http://localhost:3000`.
-4. API documentation is available at `http://localhost:3000/api/docs`.
+2. Create a .env file for your environment with your private information
+    CONTENTFUL_SPACE_ID=
+    CONTENTFUL_ACCESS_TOKEN=
+    CONTENTFUL_ENVIRONMENT=
+    CONTENTFUL_CONTENT_TYPE=
+    MONGO_URI=
+3. Run `docker-compose up` to start the application and MongoDB.
+4. Access the API at `http://localhost:3000`.
+5. API documentation is available at `http://localhost:3000/api/docs`.
 
 ## API Endpoints
 - `GET /products` to retrieve paginated products.
 - `DELETE /products/:id` to delete a product.
+- for more information check the API documentation at `http://localhost:3000/api/docs`.
 
 ## Scheduled Tasks
 - The server fetches product data from Contentful every hour.

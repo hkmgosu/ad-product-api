@@ -45,7 +45,7 @@ export class AuthController {
   signIn(@Body() input: LoginDto) {
     if (!input.username || !input.password)
       throw new BadRequestException(
-        'Need to provide Username and Password por Login',
+        'Need to provide Username and Password for the Login',
       );
     return this.authService.signIn(input);
   }

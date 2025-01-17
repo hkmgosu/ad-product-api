@@ -1,31 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsService } from './products.service';
 import { getModelToken } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
+import { Product } from './schemas/product.schema';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 
-// Mock Product DTO
-const mockProductDto = {
-  id: '123',
-  name: 'Test Product',
-  category: 'Test Category',
-  price: 100,
-};
+describe('ProductsService', () => {
+  let service: ProductsService;
+  let model: any;
 
-// Mock Products
-const mockProducts = [mockProductDto];
-
-// Mock Product Model
-const mockProductModel = {
-  create: jest.fn().mockResolvedValue(mockProductDto),
-  find: jest.fn().mockResolvedValue(mockProducts),
-  findAll: jest.fn().mockResolvedValue(mockProductDto),
-  deleteOne: jest.fn().mockResolvedValue({ deletedCount: 1 }),
-};
-
-describe('productsService', () => {
-  let productsService: ProductsService;
+  const mockProductModel = {
+    find: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+    exec: jest.fn().mockResolvedValue([]),
+    findByIdAndUpdate: jest.fn().mockResolvedValue({ deleted: true }),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,33 +24,42 @@ describe('productsService', () => {
       providers: [
         ProductsService,
         {
-          provide: getModelToken('Product'),
+          provide: getModelToken(Product.name),
           useValue: mockProductModel,
         },
-        JwtService,
         ConfigService,
       ],
     }).compile();
 
-    productsService = module.get<ProductsService>(ProductsService);
+    service = module.get<ProductsService>(ProductsService);
+    model = module.get(getModelToken(Product.name));
   });
 
   it('should be defined', () => {
-    expect(productsService).toBeDefined();
+    expect(service).toBeDefined();
   });
 
-  // it('should fetch data from Contentful and save it', async () => {
-  //   await productsService.fetchProductsFromContentful();
-  //   expect(mockProductModel.create).toHaveBeenCalledWith(mockProducts);
-  // });
+  it('should find all products with filters', async () => {
+    const result = await service.findAll(1, 5, {
+      name: undefined,
+      category: undefined,
+      minPrice: undefined,
+      maxPrice: undefined,
+    });
+    expect(model.find).toHaveBeenCalled();
+    expect(model.where).toHaveBeenCalledTimes(0);
+    expect(model.skip).toHaveBeenCalledWith(0);
+    expect(model.limit).toHaveBeenCalledWith(5);
+    expect(result).toEqual([]);
+  });
 
-  // it('should retrieve products', async () => {
-  //   const products = await productsService.findAll(1, 5);
-  //   expect(products).toEqual(mockProducts);
-  // });
-
-  // it('should delete a product', async () => {
-  //   const result = await productsService.deleteProduct('123');
-  //   expect(result).toBe(1);
-  // });
+  it('should delete a product', async () => {
+    const result = await service.deleteProduct('1');
+    expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
+      '1',
+      { deleted: true },
+      { new: true },
+    );
+    expect(result).toEqual({ deleted: true });
+  });
 });
