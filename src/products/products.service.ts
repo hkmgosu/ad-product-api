@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -17,33 +17,64 @@ export class ProductsService {
 
   @Cron(CronExpression.EVERY_HOUR) // every hour refresh
   async fetchProductsFromContentful() {
-    const response = await firstValueFrom(
-      this.httpService.get(
-        `https://cdn.contentful.com/spaces/${this.configService.get<string>('CONTENTFUL_SPACE_ID')}/environments/${this.configService.get<string>('CONTENTFUL_ENVIRONMENT')}/entries?content_type=product`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.configService.get<string>('CONTENTFUL_ACCESS_TOKEN')}`,
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `https://cdn.contentful.com/spaces/${this.configService.get<string>('CONTENTFUL_SPACE_ID')}/environments/${this.configService.get<string>('CONTENTFUL_ENVIRONMENT')}/entries?content_type=product`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.configService.get<string>('CONTENTFUL_ACCESS_TOKEN')}`,
+            },
           },
-        },
-      ),
-    );
+        ),
+      );
+      const products: Product[] = response.data.items.map(
+        (item: {
+          sys: { createdAt: Date };
+          fields: { name: string; category: string; price: number };
+        }) => ({
+          name: item.fields.name,
+          category: item.fields.category,
+          price: item.fields.price,
+          createdAt: item.sys.createdAt,
+          deleted: false,
+        }),
+      );
 
-    const products: Product[] = response.data.items.map(
-      (item: {
-        sys: { createdAt: Date };
-        fields: { name: string; category: string; price: number };
-      }) => ({
-        name: item.fields.name,
-        category: item.fields.category,
-        price: item.fields.price,
-        createdAt: item.sys.createdAt,
-        deleted: false,
-      }),
-    );
-
-    // ASSUMPTION: refresh the database collection every hour, comment the next line if you want to persist data.
-    await this.productModel.deleteMany({});
-    await this.productModel.insertMany(products);
+      // ASSUMPTION: refresh the database collection every hour, comment the next line if you want to persist data.
+      await this.productModel.deleteMany({});
+      await this.productModel.insertMany(products);
+    } catch (error) {
+      // Handle contenful request error based on the type of error
+      if (error.response) {
+        // The request was made, but the server responded with an error
+        throw new HttpException(
+          {
+            status: error.response.status,
+            message: error.response.data.message || 'Error fetching entries',
+          },
+          error.response.status,
+        );
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new HttpException(
+          {
+            status: HttpStatus.GATEWAY_TIMEOUT,
+            message: 'No response received from Contentful',
+          },
+          HttpStatus.GATEWAY_TIMEOUT,
+        );
+      } else {
+        // Something happened in setting up the request
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: error.message,
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 
   async findAll(
