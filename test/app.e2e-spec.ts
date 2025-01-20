@@ -11,9 +11,7 @@ describe('App E2E Tests', () => {
   let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
-    console.time('MongoMemoryServer Creation');
     mongoServer = await MongoMemoryServer.create();
-    console.timeEnd('MongoMemoryServer Creation');
     const uri = mongoServer.getUri();
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [MongooseModule.forRoot(uri), AppModule],
@@ -21,7 +19,7 @@ describe('App E2E Tests', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-  }, 30000);
+  });
 
   afterAll(async () => {
     // Close the application and MongoDB connection
