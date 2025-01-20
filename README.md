@@ -11,7 +11,7 @@
   - CONTENTFUL_ACCESS_TOKEN=
   - CONTENTFUL_ENVIRONMENT=
   - CONTENTFUL_CONTENT_TYPE=
-  - MONGODB_URI=
+  - add this for local development MONGODB_URI=
 3. Run `docker-compose up` to start the application and MongoDB.
 4. Access the API at `http://localhost:3000`.
 5. API documentation is available at `http://localhost:3000/api/docs`.

@@ -33,31 +33,43 @@ describe('ProductsController', () => {
   });
 
   it('should return an array of products', async () => {
-    const result = await controller.findAll(
-      1,
-      5,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    );
-    expect(result).toEqual([]);
-    expect(mockProductsService.findAll).toHaveBeenCalledWith(1, 5, {
+    const page = 1;
+    const limit = 5;
+    const filter = {
       name: undefined,
       category: undefined,
       minPrice: undefined,
       maxPrice: undefined,
+    };
+    const result = await controller.findAll({
+      page,
+      limit,
+      ...filter,
     });
+
+    expect(result).toEqual([]);
+    expect(mockProductsService.findAll).toHaveBeenCalledWith(
+      page,
+      limit,
+      filter,
+    );
   });
 
   it('should throw BadRequestException if limit > 5', async () => {
     await expect(
-      controller.findAll(1, 6, 'Apple', 'Smartwatch', 1400, 1800),
+      controller.findAll({
+        page: 1,
+        limit: 6,
+        name: 'Apple',
+        category: 'Smartwatch',
+        minPrice: 1400,
+        maxPrice: 1800,
+      }),
     ).rejects.toThrow(BadRequestException);
   });
 
   it('should delete a product by id', async () => {
-    const result = await controller.remove('1');
+    const result = await controller.remove({ id: '1' });
     expect(result).toEqual({ deleted: true });
     expect(mockProductsService.deleteProduct).toHaveBeenCalledWith('1');
   });

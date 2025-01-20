@@ -16,6 +16,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { FindAllProductsDto } from './dto/find-all-products.dto';
+import { RemoveProductDto } from './dto/remove-product.dto';
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
@@ -73,15 +75,11 @@ export class ProductsController {
     example: 1800,
   })
   @ApiResponse({ status: 200, description: 'Retrieved products successfully.' })
-  async findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 5,
-    @Query('name') name: string | undefined,
-    @Query('category') category: string | undefined,
-    @Query('minPrice') minPrice: number | undefined,
-    @Query('maxPrice') maxPrice: number | undefined,
-  ): Promise<Product[]> {
+  async findAll(@Query() query: FindAllProductsDto): Promise<Product[]> {
+    const { page, limit, name, category, minPrice, maxPrice } = query;
+
     if (limit > 5) throw new BadRequestException('Limit need to be 5 or less');
+
     const filter = { name, category, minPrice, maxPrice };
     return this.productsService.findAll(Number(page), Number(limit), filter);
   }
@@ -102,7 +100,7 @@ export class ProductsController {
     description: 'The product has been successfully deleted.',
   })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.productsService.deleteProduct(id);
+  async remove(@Param() params: RemoveProductDto) {
+    return this.productsService.deleteProduct(params.id);
   }
 }
