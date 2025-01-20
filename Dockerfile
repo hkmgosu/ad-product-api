@@ -1,4 +1,4 @@
-# Use Node.js as the base image
+# Use the official Node.js image as a base
 FROM node:18
 
 # Set the working directory
@@ -10,14 +10,11 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of your application code
 COPY . .
 
 # Build the NestJS application
 RUN npm run build
 
-# Expose the application port
-EXPOSE 3000
-
-# Command to start the application
-CMD ["npm", "run", "start:prod"]
+# Start the application
+CMD ["node", "dist/main"]

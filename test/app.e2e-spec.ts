@@ -11,7 +11,6 @@ describe('App E2E Tests', () => {
   let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
-    jest.setTimeout(30000);
     console.time('MongoMemoryServer Creation');
     mongoServer = await MongoMemoryServer.create();
     console.timeEnd('MongoMemoryServer Creation');
@@ -22,7 +21,7 @@ describe('App E2E Tests', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-  });
+  }, 10000);
 
   afterAll(async () => {
     // Close the application and MongoDB connection
