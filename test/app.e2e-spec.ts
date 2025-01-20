@@ -11,7 +11,10 @@ describe('App E2E Tests', () => {
   let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
+    jest.setTimeout(30000);
+    console.time('MongoMemoryServer Creation');
     mongoServer = await MongoMemoryServer.create();
+    console.timeEnd('MongoMemoryServer Creation');
     const uri = mongoServer.getUri();
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [MongooseModule.forRoot(uri), AppModule],
